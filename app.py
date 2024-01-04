@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import googlesearch
+from duckduckgo_search import DDGS
 app = Flask(__name__)
 
 @app.route('/')
@@ -9,7 +9,10 @@ def index():
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query')
-    x=googlesearch.search(str(query),advanced=True, num_results=20)
+    x=[]
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=20)]
+        x.append(results)
     return render_template('result.html', query=query, results=x)
 
 if __name__ == '__main__':
